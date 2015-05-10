@@ -56,7 +56,6 @@ def MainMenu():
 ####################################################################################################
 
 def checkConfig():
-	global req_api_version
 	result = {
 		'status':False,
 		'message':''
@@ -96,13 +95,15 @@ def getTVHeadendJson(apirequest, arg1):
 		getRecordings='api/dvr/entry/grid_finished'
 	)
 
+	encoding = Prefs['tvheadend_encoding'] if Prefs['tvheadend_encoding'] != False else Prefs['tvheadend_encoding']
+
 	try:
                 base64string = base64.encodestring('%s:%s' % (Prefs['tvheadend_user'], Prefs['tvheadend_pass'])).replace('\n', '')
                 request = urllib2.Request("http://%s:%s/%s" % (Prefs['tvheadend_host'], Prefs['tvheadend_web_port'], api[apirequest]))
                 request.add_header("Authorization", "Basic %s" % base64string)
                 response = urllib2.urlopen(request)
 
-                json_tmp = response.read().decode('utf-8')
+                json_tmp = response.read().decode(encoding)
                 json_data = json.loads(json_tmp)
 	except Exception, e:
 		if debug == True: Log("JSON-Request failed: " + str(e))
